@@ -155,7 +155,7 @@ export default {
         if (response.data) {
           alert("Đăng nhập thành công!");
           localStorage.setItem("currentUser", JSON.stringify(response.data));
-          router.push("/");
+          router.push("/profile");
         } else {
           alert("sai");
         }
