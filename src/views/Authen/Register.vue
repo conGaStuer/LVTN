@@ -58,17 +58,40 @@
           <div class="form-login">
             <h2>Xin chào!</h2>
             <h4>Chào mừng bạn đến với cửa hàng bookapoo</h4>
-            <form action="">
-              <input type="text" name="" id="" placeholder="Tên đăng nhập" />
-              <input type="password" name="" id="" placeholder="Mật khẩu" />
+            <form @submit.prevent="handleRegister">
+              <input
+                type="text"
+                name=""
+                id=""
+                placeholder="Tên đăng nhập"
+                v-model="username"
+                @input="handleUsername"
+                required
+              />
+              <input
+                type="password"
+                name=""
+                id=""
+                placeholder="Mật khẩu"
+                v-model="password"
+                required
+                @input="handlePassword"
+              />
               <input
                 type="password"
                 name=""
                 id=""
                 placeholder="Xác nhận Mật khẩu"
+                @input="checkPasswords"
+                v-model="confirmPassword"
+                required
               />
-              <span>Quên mật khẩu</span>
-              <button>Đăng kí</button>
+              <span v-if="passwordsMatch" class="checkpass">Mật khẩu khớp</span>
+              <span v-else class="checkpass1">Mật khẩu không khớp</span>
+              <span v-if="checkpass" class="checkpass">{{ checkpass }}</span>
+
+              <div class="missing">Quên mật khẩu</div>
+              <button type="submit">Đăng kí</button>
             </form>
             <span class="hoac">Hoặc</span>
             <router-link to="/login">Đăng nhập</router-link>
@@ -80,7 +103,10 @@
 </template>
 
 <script>
+import axios from "axios";
 import gsap from "gsap";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 
 export default {
   setup() {
@@ -133,6 +159,54 @@ export default {
       });
     };
 
+    const username = ref("");
+    const password = ref("");
+    const confirmPassword = ref("");
+    const passwordsMatch = ref(false);
+    let specialCharacterRegex = new RegExp('[!@#$%^&*(),.?":{}|<>]');
+    const checkpass = ref(false);
+    const checkPasswords = () => {
+      passwordsMatch.value = password.value === confirmPassword.value;
+    };
+    const handleUsername = () => {
+      if (username.value.length >= 15) {
+        alert("Tên đăng nhập không được quá 15 kí tự");
+      } else if (specialCharacterRegex.test(username.value)) {
+        alert("Tên đăng nhập không được chứa ký tự đặc biệt");
+      }
+    };
+    const hasSpecialCharacter = (str) => {
+      let specialCharacterRegex = /[!@#$%^&*(),.?":{}|<>]/;
+      return specialCharacterRegex.test(str);
+    };
+
+    const handlePassword = () => {
+      if (password.value.length <= 8) {
+        checkpass.value = "Mat khau phai chua toi thieu 8 ki tu";
+      } else if (!hasSpecialCharacter(password.value)) {
+        checkpass.value = "Mat khau phai chua toi thieu 1 ki tu dac biet";
+      }
+    };
+    const router = useRouter();
+    const handleRegister = () => {
+      axios
+        .post("http://localhost/LVTN/book-store/src/api/register.php", {
+          username: username.value,
+          password: password.value,
+        })
+        .then((response) => {
+          if (response.data) {
+            alert("Đăng nhập thành công!");
+            localStorage.setItem("currentUser", JSON.stringify(response.data));
+            router.push("/profile");
+          } else {
+            alert("Đăng nhập không thành công!");
+          }
+        })
+        .catch((err) => {
+          console.log("Error", err);
+        });
+    };
     return {
       beforeEnter1,
       enter1,
@@ -142,6 +216,16 @@ export default {
       rightLeft,
       beforeupDown,
       downUp,
+      username,
+      password,
+      confirmPassword,
+      passwordsMatch,
+      checkPasswords,
+      handleRegister,
+      handleUsername,
+      handlePassword,
+      specialCharacterRegex,
+      checkpass,
     };
   },
 };

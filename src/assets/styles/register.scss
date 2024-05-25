@@ -107,6 +107,26 @@ $text-color: #3c374b;
           flex-direction: column;
           justify-content: space-between;
           align-items: center;
+          .checkpass {
+            position: relative;
+
+            top: -15px;
+            color: #3c374b;
+            font-size: 11px;
+          }
+          .checkpass1 {
+            position: relative;
+
+            top: -15px;
+            color: #b48aff;
+            font-size: 11px;
+          }
+          .missing {
+            position: relative;
+            left: 220px;
+            top: 10px;
+            font-size: 11px;
+          }
           h2,
           h4 {
             margin: 0;
@@ -161,10 +181,6 @@ $text-color: #3c374b;
             &:hover {
               box-shadow: inset 400px 0 0 0 #3c374b;
             }
-          }
-          span {
-            font-size: 11px;
-            float: right;
           }
         }
         .hoac {
