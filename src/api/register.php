@@ -17,10 +17,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     } else {
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
         $sql_insert = "INSERT INTO nguoi_dung (maND, taikhoan, matkhau, tenKH, sdt, email, hinh, diachi, anhbia, maVaiTro)
-        VALUES ('', '$username', '$hashed_password', '', '', '', '', '', '', 1)";
+        VALUES ('', '$username', '$password', '', '', '', '', '', '', 1)";
         $result_insert = $conn->query($sql_insert);
         if ($result_insert === true) {
             $_SESSION['user'] = $username;

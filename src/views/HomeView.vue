@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Xin chào, {{ currentUser ? currentUser.tenKH : "Khách hàng" }}!</h1>
+    <h1>Xin chào, {{ currentUser ? currentUser.taikhoan : "Khách hàng" }}!</h1>
     <button @click="handleLogout">Đăng xuất</button>
   </div>
 </template>

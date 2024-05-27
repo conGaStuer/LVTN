@@ -14,8 +14,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($result->num_rows > 0) {
         $_SESSION['user'] = $username;
-
-
         $user = $result->fetch_assoc();
         echo json_encode($user);
     } else {

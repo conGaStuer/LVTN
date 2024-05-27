@@ -86,9 +86,21 @@
                 v-model="confirmPassword"
                 required
               />
-              <span v-if="passwordsMatch" class="checkpass">Mật khẩu khớp</span>
+              <span v-if="passwordsMatch" class="checkpass">
+                &check; Mật khẩu khớp</span
+              >
               <span v-else class="checkpass1">Mật khẩu không khớp</span>
-              <span v-if="checkpass" class="checkpass">{{ checkpass }}</span>
+              <div v-if="passwordLengthValid" class="checkpass22">
+                &check; Mật khẩu tối thiểu 8 kí tự
+              </div>
+              <div v-else class="checkpass2">Mật khẩu tối thiểu 8 kí tự</div>
+              <div v-if="passwordSpecialCharValid" class="checkpass33">
+                &check; Mật khẩu phải có ít nhất 1 kí tự đặc biệt
+              </div>
+
+              <div v-else class="checkpass3">
+                Mật khẩu phải có ít nhất 1 kí tự đặc biệt
+              </div>
 
               <div class="missing">Quên mật khẩu</div>
               <button type="submit">Đăng kí</button>
@@ -105,7 +117,7 @@
 <script>
 import axios from "axios";
 import gsap from "gsap";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 
 export default {
@@ -164,48 +176,51 @@ export default {
     const confirmPassword = ref("");
     const passwordsMatch = ref(false);
     let specialCharacterRegex = new RegExp('[!@#$%^&*(),.?":{}|<>]');
-    const checkpass = ref(false);
+
     const checkPasswords = () => {
       passwordsMatch.value = password.value === confirmPassword.value;
     };
     const handleUsername = () => {
       if (username.value.length >= 15) {
         alert("Tên đăng nhập không được quá 15 kí tự");
+        username.value = "";
       } else if (specialCharacterRegex.test(username.value)) {
         alert("Tên đăng nhập không được chứa ký tự đặc biệt");
+        username.value = "";
       }
-    };
-    const hasSpecialCharacter = (str) => {
-      let specialCharacterRegex = /[!@#$%^&*(),.?":{}|<>]/;
-      return specialCharacterRegex.test(str);
     };
 
-    const handlePassword = () => {
-      if (password.value.length <= 8) {
-        checkpass.value = "Mat khau phai chua toi thieu 8 ki tu";
-      } else if (!hasSpecialCharacter(password.value)) {
-        checkpass.value = "Mat khau phai chua toi thieu 1 ki tu dac biet";
-      }
-    };
+    const passwordLengthValid = computed(() => password.value.length >= 8);
+    const passwordSpecialCharValid = computed(() =>
+      /[!@#$%^&*(),.?":{}|<>]/.test(password.value)
+    );
+
     const router = useRouter();
     const handleRegister = () => {
-      axios
-        .post("http://localhost/LVTN/book-store/src/api/register.php", {
-          username: username.value,
-          password: password.value,
-        })
-        .then((response) => {
-          if (response.data) {
-            alert("Đăng nhập thành công!");
-            localStorage.setItem("currentUser", JSON.stringify(response.data));
-            router.push("/profile");
-          } else {
-            alert("Đăng nhập không thành công!");
-          }
-        })
-        .catch((err) => {
-          console.log("Error", err);
-        });
+      if (passwordLengthValid.value || passwordSpecialCharValid.value) {
+        axios
+          .post("http://localhost/LVTN/book-store/src/api/register.php", {
+            username: username.value,
+            password: password.value,
+          })
+          .then((response) => {
+            if (response.data.error) {
+              alert("Trùng tên đăng nhập. Vui lòng chọn tên đăng nhập khác!");
+            } else {
+              alert("Đăng kí thành công!");
+              localStorage.setItem(
+                "currentUser",
+                JSON.stringify(response.data)
+              );
+              router.push("/profile");
+            }
+          })
+          .catch((err) => {
+            console.log("Error", err);
+          });
+      } else {
+        alert("Vui lòng nhập mật khẩu đúng với yêu cầu");
+      }
     };
     return {
       beforeEnter1,
@@ -223,9 +238,9 @@ export default {
       checkPasswords,
       handleRegister,
       handleUsername,
-      handlePassword,
+      passwordLengthValid,
+      passwordSpecialCharValid,
       specialCharacterRegex,
-      checkpass,
     };
   },
 };

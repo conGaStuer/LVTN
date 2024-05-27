@@ -152,12 +152,12 @@ export default {
             password: password.value,
           }
         );
-        if (response.data) {
+        if (response.data.error) {
+          alert("Không tìm thấy người dùng, vui lòng đăng nhập lại");
+        } else {
           alert("Đăng nhập thành công!");
           localStorage.setItem("currentUser", JSON.stringify(response.data));
           router.push("/profile");
-        } else {
-          alert("sai");
         }
       } catch (error) {
         console.error(error);

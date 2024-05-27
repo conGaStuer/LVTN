@@ -110,16 +110,38 @@ $text-color: #3c374b;
           .checkpass {
             position: relative;
 
-            top: -15px;
-            color: #3c374b;
+            top: -5px;
+            color: #b48aff;
+
             font-size: 11px;
           }
           .checkpass1 {
             position: relative;
 
-            top: -15px;
+            top: -5px;
+            color: #3c374b;
+            font-size: 11px;
+          }
+          .checkpass2 {
+            position: relative;
+            top: -1px;
+            color: #3c374b;
+            font-size: 11px;
+          }
+          .checkpass3 {
+            position: relative;
+            top: 3px;
+            color: #3c374b;
+            font-size: 11px;
+          }
+          .checkpass22,
+          .checkpass33 {
             color: #b48aff;
             font-size: 11px;
+          }
+          .checkpass33 {
+            position: relative;
+            top: 5px;
           }
           .missing {
             position: relative;
@@ -135,21 +157,23 @@ $text-color: #3c374b;
           h2 {
             color: $text-color;
             font-size: 45px;
+            position: relative;
+            top: -40px;
           }
           h4 {
             color: $text-color;
             font-size: 12px;
             position: relative;
-            top: -10px;
+            top: -30px;
           }
           form {
             position: relative;
-            top: 10px;
+            top: 0px;
           }
           input,
           button {
             width: 98%;
-            height: 45px;
+            height: 40px;
             border: none;
             margin-bottom: 20px;
             border-radius: 8px;
@@ -185,7 +209,7 @@ $text-color: #3c374b;
         }
         .hoac {
           position: relative;
-          top: 20px;
+          top: 14px;
           font-size: 14px;
         }
         a {

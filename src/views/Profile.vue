@@ -2,9 +2,26 @@
   <div class="container">
     <div
       class="cover-image"
-      :style="{ backgroundImage: `url(${userData.anhbia})` }"
+      :style="{
+        backgroundImage: `url(http://localhost/LVTN/book-store/src/api/${userData.anhbia})`,
+        backgroundColor: !getUserCover ? ' #5e72e4' : 'transparent',
+      }"
     >
-      <!-- <input type="file" @change="handleCoverImageUpload" /> -->
+      <div class="co">
+        <label
+          for="coverChange"
+          @mouseover="handleMouseOver"
+          @mouseleave="handleMouseLeave"
+          ><i class="fa-solid fa-pen-to-square"></i>
+        </label>
+
+        <input type="file" id="coverChange" @change="handleCoverImageUpload" />
+        <button @click="uploadFileCover">Upload</button>
+      </div>
+      <div class="remind" v-if="isHovered">
+        Sau khi chọn ảnh nhớ ấn nút Upload và ấn cập nhật để lưu lại ảnh nhé bạn
+        ơi :3
+      </div>
     </div>
     <div class="profile">
       <div class="profile-content">
@@ -22,33 +39,50 @@
                 <input
                   type="text"
                   name=""
-                  id=""
                   :placeholder="userData.taikhoan"
                   disabled
                 />
               </div>
               <div class="info">
                 <p>Địa chỉ email</p>
-                <input type="text" name="" id="" v-model="userData.email" />
+                <input type="text" name="" v-model="userData.email" />
               </div>
               <div class="info">
                 <p>Họ và tên</p>
-                <input type="text" name="" id="" v-model="userData.tenKH" />
+                <input type="text" name="" v-model="userData.tenKH" />
               </div>
               <div class="info">
                 <p>Số điện thoại</p>
-                <input type="text" name="" id="" v-model="userData.sdt" />
+                <input type="text" name="" v-model="userData.sdt" />
               </div>
             </div>
             <div class="user-contact">
               <h3 class="add">Địa chỉ liên hệ</h3>
               <div class="address">
                 <p>Địa chỉ của tôi</p>
-                <input type="text" name="" id="" v-model="userData.diachi" />
+                <input type="text" name="" v-model="userData.diachi" />
               </div>
-              <div class="address">
-                <button class="btn">
-                  <router-link to="/changepass"> Đổi mật khẩu </router-link>
+              <div class="address2">
+                <h3 class="add">Đổi mật khẩu</h3>
+                <div class="zz">
+                  <p>Nhập mật khẩu cũ</p>
+                  <input
+                    type="password"
+                    name=""
+                    v-model="currentPassword"
+                    @input="checkPass"
+                  />
+                </div>
+
+                <p>Nhập mật khẩu mới</p>
+                <input
+                  type="password"
+                  name=""
+                  v-model="newPassword"
+                  :disabled="disabled"
+                />
+                <button class="changepass" @click.prevent="handleChangePass">
+                  Đổi mật khẩu
                 </button>
               </div>
             </div>
@@ -57,15 +91,44 @@
         <div class="right-side">
           <div
             class="avatar"
-            :style="{ backgroundImage: `url(${userData.hinh})` }"
-          >
-            <!-- <input type="file" @change="handleAvatarUpload" /> -->
-          </div>
+            :style="{
+              backgroundImage: `url('http://localhost/LVTN/book-store/src/api/${userData.hinh}')`,
+
+              backgroundColor: !getAvatarUser ? '#f2f2f2' : 'transparent',
+            }"
+          ></div>
           <div class="descrip">
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Molestias
-            excepturi laudantium natus distinctio similique sunt totam. Quas,
-            similique iste totam quam molestias labore saepe sed deserunt
-            delectus fugit? Culpa, deleniti?
+            <div class="co">
+              <button>
+                <label
+                  for="coverChange1"
+                  @mouseover="handleMouseOver1"
+                  @mouseleave="handleMouseLeave1"
+                >
+                  Chọn ảnh
+                </label>
+              </button>
+              <input
+                type="file"
+                id="coverChange1"
+                @change="handleAvatarImageUpload"
+              />
+              <button @click="uploadFileAvatar">Upload</button>
+            </div>
+          </div>
+          <div class="des">
+            <span>
+              <b>Hướng dẫn</b> <br />
+              <span class="guide">
+                Sau khi câp nhật các thông tin trong hồ sơ (Ảnh bìa, Tên ,
+                email, vv...) , nhớ ấn nút cập nhật để lưu lại thông tin bạn nhé
+                :3
+              </span>
+            </span>
+          </div>
+          <div class="remind" v-if="isHovered1">
+            Sau khi chọn ảnh nhớ ấn nút Upload và ấn cập nhật để lưu lại ảnh nhé
+            bạn ơi :3
           </div>
         </div>
       </div>
@@ -74,7 +137,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, computed, onMounted } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 
@@ -90,6 +153,41 @@ export default {
           userData.value
         )
         .then((res) => {
+          if (res.data.updateProfileSuccess) {
+            localStorage.setItem("currentUser", JSON.stringify(userData.value));
+            alert("Cập nhật thông tin thành công");
+            window.location.reload();
+          }
+        })
+        .catch((err) => {
+          console.log("Error", err);
+        });
+    };
+    const getUserCover = ref("");
+
+    const getCover = () => {
+      axios
+        .post("http://localhost/LVTN/book-store/src/api/cover.php", {
+          user: userData.value.maND,
+        })
+        .then((res) => {
+          if (res.data) {
+            getUserCover.value = res.data.anhbia;
+            userData.value.anhbia = getUserCover.value;
+          }
+        })
+        .catch((err) => {
+          console.log("Error", err);
+        });
+    };
+    const getAvatarUser = ref("");
+
+    const getAvatar = () => {
+      axios
+        .post("http://localhost/LVTN/book-store/src/api/cover.php", {
+          user: userData.value.maND,
+        })
+        .then((res) => {
           if (res.data) {
             localStorage.setItem("currentUser", JSON.stringify(userData.value));
             alert("Cập nhật thông tin thành công");
@@ -100,45 +198,179 @@ export default {
           console.log("Error", err);
         });
     };
+
+    const file = ref("");
     const handleCoverImageUpload = (event) => {
-      const file = event.target.files[0];
-      const formData = new FormData();
-      formData.append("anhbia", file);
+      file.value = event.target.files[0];
+    };
+    const handleAvatarImageUpload = (event) => {
+      file.value = event.target.files[0];
+    };
+    const uploadFileCover = () => {
+      const maND = userData.value.maND;
+      let formData = new FormData();
+      formData.append("file", file.value);
+      formData.append("maND", maND);
+      file.value = "";
       axios
         .post(
-          "http://localhost/LVTN/book-store/src/api/uploadCoverImage.php",
-          formData
+          "http://localhost/LVTN/book-store/src/api/uploadImage.php",
+          formData,
+
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
         )
         .then((response) => {
-          userData.value.anhbia = response.data.url; // Assuming your backend returns the URL of the uploaded image
+          if (!response.data) {
+            alert("Upload hình không thành công");
+          } else {
+            alert("Upload thành công");
+
+            getCover();
+          }
         })
         .catch((error) => {
-          console.error("Error uploading cover image:", error);
+          console.error(error);
         });
+    };
+    const uploadFileAvatar = () => {
+      const maND = userData.value.maND;
+      let formData = new FormData();
+      formData.append("file", file.value);
+      formData.append("maND", maND);
+      file.value = "";
+      axios
+        .post(
+          "http://localhost/LVTN/book-store/src/api/uploadImage.php",
+          formData,
+
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
+        .then((response) => {
+          if (!response.data) {
+            alert("Upload hình không thành công");
+          } else {
+            alert("Upload thành công");
+            getAvatar();
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
+    const isHovered = ref(false);
+    const handleMouseOver = () => {
+      isHovered.value = true;
     };
 
-    const handleAvatarUpload = (event) => {
-      const file = event.target.files[0];
-      const formData = new FormData();
-      formData.append("hinh", file);
-      axios
-        .post(
-          "http://localhost/LVTN/book-store/src/api/uploadAvatar.php",
-          formData
-        )
-        .then((response) => {
-          userData.value.hinh = response.data.url; // Assuming your backend returns the URL of the uploaded image
-        })
-        .catch((error) => {
-          console.error("Error uploading avatar:", error);
-        });
+    const handleMouseLeave = () => {
+      isHovered.value = false;
     };
+    const isHovered1 = ref(false);
+    const handleMouseOver1 = () => {
+      isHovered1.value = true;
+    };
+
+    const handleMouseLeave1 = () => {
+      isHovered1.value = false;
+    };
+    const currentPassword = ref("");
+    const newPassword = ref("");
+
+    const passwordLengthValid = computed(() => newPassword.value.length >= 8);
+    const passwordSpecialCharValid = computed(() =>
+      /[!@#$%^&*(),.?":{}|<>]/.test(newPassword.value)
+    );
+    // const router = useRouter();
+
+    const handleChangePass = () => {
+      if (passwordLengthValid.value && passwordSpecialCharValid.value) {
+        axios
+          .post("http://localhost/LVTN/book-store/src/api/changepass.php", {
+            maND: userData.value.maND,
+            newPassword: newPassword.value,
+          })
+          .then((response) => {
+            if (response.data.changePassSuccess) {
+              alert("Cập nhật mật khẩu thành công!");
+              localStorage.setItem(
+                "currentUser",
+                JSON.stringify(userData.value)
+              );
+              window.location.reload();
+            } else {
+              alert("Đổi mật khẩu thất bại");
+            }
+          })
+          .catch((err) => {
+            console.log("Error", err);
+          });
+      } else {
+        alert("Vui lòng nhập mật khẩu đúng với yêu cầu");
+      }
+    };
+    const disabled = ref("false");
+
+    const checkPass = () => {
+      if (currentPassword.value.length == info.value.matkhau.length) {
+        if (currentPassword.value != info.value.matkhau) {
+          disabled.value = true;
+
+          alert("Mật khẩu bạn nhập không đúng!!");
+        } else {
+          disabled.value = false;
+        }
+      } else if (currentPassword.value.length > info.value.matkhau.length) {
+        alert("Mật khẩu bạn nhập không đúng!!");
+        disabled.value = true;
+      }
+    };
+    const info = ref();
+    onMounted(() => {
+      axios
+        .post("http://localhost/LVTN/book-store/src/api/cover.php", {
+          user: userData.value.maND,
+        })
+        .then((res) => {
+          if (res.data.user) {
+            info.value = res.data.user;
+            console.log(info.value);
+          }
+        })
+        .catch((err) => console.log("error", err));
+    });
     return {
       currentUser,
       userData,
       updateProfile,
       handleCoverImageUpload,
-      handleAvatarUpload,
+      handleAvatarImageUpload,
+      file,
+      uploadFileCover,
+      uploadFileAvatar,
+      getUserCover,
+      getAvatarUser,
+      isHovered,
+      handleMouseOver,
+      handleMouseLeave,
+      isHovered1,
+      handleMouseOver1,
+      handleMouseLeave1,
+      currentPassword,
+      newPassword,
+      handleChangePass,
+      passwordLengthValid,
+      passwordSpecialCharValid,
+      checkPass,
+      disabled,
+      info,
     };
   },
 };
