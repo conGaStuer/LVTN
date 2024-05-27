@@ -1,5 +1,5 @@
 # book-store
-
+7 điểm = 500k :))))) , 8đ = 800k 
 ## Project setup
 ```
 yarn install
